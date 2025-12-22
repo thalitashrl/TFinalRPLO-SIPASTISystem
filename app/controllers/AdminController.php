@@ -292,5 +292,22 @@ public function hapusSampah($id) {
         }
     }
 
+    // --- FITUR CETAK LAPORAN (PDF) ---
+    public function cetakLaporan() {
+        // 1. Ambil Filter Bulan
+        $bulan = isset($_GET['bulan']) ? $_GET['bulan'] : date('Y-m');
+        
+        $data['bulan'] = $bulan;
+        $data['judul'] = 'Laporan Keuangan - ' . $bulan;
+        
+        // 2. Panggil Model (PERBAIKAN DI SINI)
+        $transaksiModel = $this->model('TransaksiModel');
+        
+        // Ambil data lewat fungsi model yang baru kita buat
+        $data['transaksi'] = $transaksiModel->getLaporanBulanan($bulan);
+
+        // 3. Panggil View Khusus Cetak
+        $this->view('admin/cetak_laporan', $data);
+    }
     
 }

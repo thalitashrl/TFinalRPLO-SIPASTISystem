@@ -215,4 +215,49 @@ class TransaksiModel {
         $result = $this->db->query($query)->fetch_assoc();
         return $result['total'] ?? 0;
     }
+
+    // --- FITUR CETAK LAPORAN (PDF) ---
+    public function getLaporanBulanan($bulan) {
+        $month = date('m', strtotime($bulan));
+        $year = date('Y', strtotime($bulan));
+
+        // PERBAIKAN: Ganti 'keterangan' menjadi 'tujuan_pengepul as keterangan'
+        $query = "
+            (SELECT 
+                'Penjualan' as jenis, 
+                tgl_penjualan as tanggal, 
+                tujuan_pengepul as keterangan, -- Perbaikan disini (Ambil nama pengepul)
+                total_pendapatan as masuk, 
+                0 as keluar 
+             FROM transaksi_penjualan 
+             WHERE MONTH(tgl_penjualan) = '$month' AND YEAR(tgl_penjualan) = '$year')
+             
+            UNION ALL
+            
+            (SELECT 
+                'Penarikan' as jenis, 
+                tgl_penarikan as tanggal, 
+                'Penarikan Saldo Nasabah' as keterangan, -- String manual
+                0 as masuk, 
+                jumlah_penarikan as keluar 
+             FROM transaksi_penarikan 
+             WHERE MONTH(tgl_penarikan) = '$month' AND YEAR(tgl_penarikan) = '$year')
+             
+            UNION ALL
+            
+            (SELECT 
+                'Setoran' as jenis, 
+                tgl_setoran as tanggal, 
+                'Setoran Sampah' as keterangan, -- String manual
+                total_harga as masuk, 
+                0 as keluar 
+             FROM transaksi_setoran 
+             WHERE MONTH(tgl_setoran) = '$month' AND YEAR(tgl_setoran) = '$year')
+             
+            ORDER BY tanggal DESC
+        ";
+        
+        return $this->db->query($query);
+    }
+    
 }

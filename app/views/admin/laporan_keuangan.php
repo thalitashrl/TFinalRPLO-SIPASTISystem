@@ -11,9 +11,10 @@
                 <option>Desember 2025</option>
                 <option>November 2025</option>
             </select>
-            <button class="btn btn-warning text-white btn-sm fw-bold">
-                <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF
-            </button>
+            <?php $bulanCetak = $_GET['bulan'] ?? date('Y-m'); ?>
+                <a href="index.php?page=cetak_laporan&bulan=<?= $bulanCetak ?>" target="_blank" class="btn btn-warning text-dark fw-bold">
+                    <i class="bi bi-file-earmark-pdf-fill me-2"></i> Export PDF
+                </a>
         </div>
     </div>
 

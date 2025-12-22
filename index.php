@@ -254,7 +254,17 @@ case 'hapus_nasabah':
         }
         break;
 
-    // --- MODUL PENCATAT (TRANSAKSI) ---
+    // --- CETAK LAPORAN ---
+    case 'cetak_laporan':
+        // Izinkan Admin dan Bendahara
+        if (isset($_SESSION['role']) && ($_SESSION['role'] == 'Admin' || $_SESSION['role'] == 'Bendahara')) {
+            require_once 'app/controllers/AdminController.php';
+            (new AdminController())->cetakLaporan();
+        } else {
+            header("Location: index.php?page=login");
+        }
+        break;
+
     
     // --- MODUL PENCATAT (TRANSAKSI) ---
     // Update: Tambahkan 'case setoran' agar sesuai dengan link di Sidebar Pencatat
