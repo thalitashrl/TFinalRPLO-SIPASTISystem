@@ -341,17 +341,44 @@ case 'hapus_nasabah':
 
     // 2. Validasi Penarikan (Sama dengan Tarik Saldo)
     // Di sini Bendahara melakukan eksekusi/pencatatan penarikan uang
+    // --- BENDAHARA: HALAMAN VALIDASI ---
     case 'validasi':
-        if (isset($_SESSION['role']) && ($_SESSION['role'] == 'Admin' || $_SESSION['role'] == 'Bendahara')) {
-            require_once 'app/controllers/AdminController.php';
-            (new AdminController())->tarikSaldo();
+        // Pastikan hanya Bendahara (atau Admin) yang bisa akses
+        if (isset($_SESSION['role']) && ($_SESSION['role'] == 'Bendahara' || $_SESSION['role'] == 'Admin')) {
+            
+            // PERBAIKAN: Panggil BendaharaController -> validasiPenarikan
+            // (Bukan AdminController -> tarikSaldo lagi)
+            require_once 'app/controllers/BendaharaController.php';
+            $controller = new BendaharaController();
+            $controller->validasiPenarikan();
+            
         } else {
             header("Location: index.php?page=login");
         }
         break;
         
-    // Jangan lupa update case 'proses_jual' dan 'proses_penarikan' 
-    // agar Bendahara juga diizinkan mengeksekusi formnya.
+    // --- NASABAH: REQUEST TARIK ---
+    case 'tarik_saldo_nasabah': // Tampilan Form
+        if ($_SESSION['role'] == 'Nasabah') {
+            require_once 'app/controllers/NasabahController.php';
+            (new NasabahController())->tarikSaldo();
+        }
+        break;
+        
+    case 'proses_tarik_nasabah': // Proses Submit
+        if ($_SESSION['role'] == 'Nasabah') {
+            require_once 'app/controllers/NasabahController.php';
+            (new NasabahController())->prosesTarik();
+        }
+        break;
+
+    // --- BENDAHARA: VALIDASI ---
+    case 'proses_validasi': // Eksekusi Terima/Tolak
+        if ($_SESSION['role'] == 'Bendahara' || $_SESSION['role'] == 'Admin') {
+            require_once 'app/controllers/BendaharaController.php';
+            (new BendaharaController())->prosesValidasi();
+        }
+        break;
 
     
     // Proses Login (Auth)

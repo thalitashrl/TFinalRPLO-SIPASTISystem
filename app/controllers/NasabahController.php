@@ -68,4 +68,40 @@ class NasabahController extends Controller {
 
         $this->view('nasabah/riwayat', $data);
     }
+
+    // Form Pengajuan
+    public function tarikSaldo() {
+        // Cek login & session seperti biasa...
+        $data['judul'] = 'Ajukan Penarikan Saldo';
+        $id_nasabah = $this->getIdNasabah(); // Gunakan helper yang sudah kita buat
+        
+        $nasabahModel = $this->model('NasabahModel');
+        $data['saldo_aktif'] = $nasabahModel->getSaldo($id_nasabah);
+        
+        $this->view('nasabah/tarik_saldo', $data);
+    }
+
+    // Proses Submit Pengajuan
+    public function prosesTarik() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $id_nasabah = $this->getIdNasabah();
+            $jumlah = $_POST['jumlah'];
+            $saldo = $_POST['saldo_max']; // Kirim saldo max dari form hidden untuk validasi
+
+            // Validasi Saldo Cukup
+            if ($jumlah > $saldo) {
+                echo "<script>alert('Saldo tidak mencukupi!'); window.history.back();</script>";
+                return;
+            }
+
+            $data = [
+                'id_nasabah' => $id_nasabah,
+                'jumlah' => $jumlah
+            ];
+
+            if ($this->model('TransaksiModel')->ajukanPenarikan($data)) {
+                echo "<script>alert('Permintaan berhasil dikirim! Menunggu persetujuan Bendahara.'); window.location='index.php?page=riwayat';</script>";
+            }
+        }
+    }
 }

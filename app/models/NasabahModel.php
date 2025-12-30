@@ -98,11 +98,17 @@ class NasabahModel {
     }
 
     // Ambil Saldo Terakhir Nasabah
-    public function getSaldo($id) {
-        $id = mysqli_real_escape_string($this->db, $id);
-        $query = "SELECT saldo FROM nasabah WHERE id_nasabah = '$id'";
-        $result = $this->db->query($query)->fetch_assoc();
-        return $result['saldo'] ?? 0;
+    public function getSaldo($id_nasabah) {
+        // 1. Hitung Total Setoran (Uang Masuk)
+        $querySetor = "SELECT SUM(total_harga) as total FROM transaksi_setoran WHERE id_nasabah = '$id_nasabah'";
+        $setor = $this->db->query($querySetor)->fetch_assoc()['total'] ?? 0;
+
+        // 2. Hitung Total Penarikan (Uang Keluar)
+        // PERBAIKAN: Hanya hitung yang statusnya 'approved' (Diterima)
+        $queryTarik = "SELECT SUM(jumlah_penarikan) as total FROM transaksi_penarikan WHERE id_nasabah = '$id_nasabah' AND status = 'approved'";
+        $tarik = $this->db->query($queryTarik)->fetch_assoc()['total'] ?? 0;
+
+        return $setor - $tarik;
     }
 
     // Kurangi Saldo (Untuk Penarikan)

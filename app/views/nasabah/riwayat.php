@@ -12,6 +12,12 @@
         </div>
     </div>
 
+    <div class="mb-3 text-end">
+        <a href="index.php?page=tarik_saldo_nasabah" class="btn btn-warning btn-sm fw-bold">
+            <i class="bi bi-wallet2 me-1"></i> Ajukan Penarikan
+        </a>
+    </div>
+
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -56,8 +62,34 @@
                                 <td class="fw-bold text-danger">
                                     <?= $r['keluar'] > 0 ? '- Rp '.number_format($r['keluar']) : '-' ?>
                                 </td>
-                                <td><span class="badge bg-success-subtle text-success">Berhasil</span></td>
-                            </tr>
+                                
+                                <td>
+                                    <?php if($r['jenis'] == 'Setor Sampah'): ?>
+                                        <span class="badge bg-success-subtle text-success border border-success">Berhasil</span>
+                                    
+                                    <?php else: ?>
+                                        <?php 
+                                            // Ambil status, default 'approved' untuk data lama
+                                            $status = isset($r['status']) ? $r['status'] : 'approved'; 
+                                        ?>
+
+                                        <?php if($status == 'pending'): ?>
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-hourglass-split me-1"></i> Proses
+                                            </span>
+                                        <?php elseif($status == 'rejected'): ?>
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-x-circle me-1"></i> Ditolak
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle me-1"></i> Diterima
+                                            </span>
+                                        <?php endif; ?>
+
+                                    <?php endif; ?>
+                                </td>
+                                </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>

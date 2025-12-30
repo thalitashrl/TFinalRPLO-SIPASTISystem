@@ -259,5 +259,54 @@ class TransaksiModel {
         
         return $this->db->query($query);
     }
+
+    // --- FITUR REQUEST PENARIKAN ---
+    
+    // 1. Nasabah Mengajukan Penarikan (Status otomatis 'pending')
+    public function ajukanPenarikan($data) {
+        $id_nasabah = $data['id_nasabah'];
+        $jumlah = $data['jumlah'];
+        $tanggal = date('Y-m-d H:i:s');
+        
+        // Simpan dengan status 'pending'
+        $query = "INSERT INTO transaksi_penarikan (id_nasabah, jumlah_penarikan, tgl_penarikan, status) 
+                  VALUES ('$id_nasabah', '$jumlah', '$tanggal', 'pending')";
+        return $this->db->query($query);
+    }
+
+    // 2. Ambil Semua Request Pending (Untuk Dashboard Bendahara)
+    public function getPendingPenarikan() {
+        
+        $query = "SELECT t.*, p.nama_lengkap 
+                  FROM transaksi_penarikan t 
+                  JOIN nasabah n ON t.id_nasabah = n.id_nasabah 
+                  JOIN pengguna p ON n.id_pengguna = p.id_pengguna 
+                  WHERE t.status = 'pending' 
+                  ORDER BY t.tgl_penarikan ASC";
+                  
+        return $this->db->query($query);
+    }
+
+    // 3. Ambil Riwayat Validasi (Yang sudah Selesai)
+    public function getRiwayatValidasi() {
+        
+        $query = "SELECT t.*, p.nama_lengkap 
+                  FROM transaksi_penarikan t 
+                  JOIN nasabah n ON t.id_nasabah = n.id_nasabah 
+                  JOIN pengguna p ON n.id_pengguna = p.id_pengguna 
+                  WHERE t.status != 'pending' 
+                  ORDER BY t.tgl_penarikan DESC LIMIT 50"; // Limit 50 agar tidak terlalu berat
+                  
+        return $this->db->query($query);
+    }
+
+    // 3. Bendahara Memproses (Terima/Tolak)
+    public function updateStatusPenarikan($id_penarikan, $status) {
+        $id_penarikan = mysqli_real_escape_string($this->db, $id_penarikan);
+        $status = mysqli_real_escape_string($this->db, $status);
+        
+        $query = "UPDATE transaksi_penarikan SET status = '$status' WHERE id_penarikan = '$id_penarikan'";
+        return $this->db->query($query);
+    }
     
 }

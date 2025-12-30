@@ -177,6 +177,10 @@
                 <i class="bi bi-people-fill"></i>
                 <span class="menu-item-text">Kelola Pengguna</span>
             </a>
+            <a href="index.php?page=validasi" class="menu-item <?= ($_GET['page'] == 'validasi') ? 'active' : '' ?>">
+                <i class="bi bi-people-fill"></i>
+                <span class="menu-item-text">Validasi Penarikan</span>
+            </a>
             <a href="index.php?page=laporan_keuangan" class="menu-item <?= ($_GET['page'] == 'laporan_keuangan') ? 'active' : '' ?>">
                 <i class="bi bi-file-earmark-text-fill"></i>
                 <span class="menu-item-text">Laporan Keuangan</span>
@@ -210,6 +214,10 @@
 
         <?php elseif ($_SESSION['role'] == 'Nasabah'): ?>
             <div class="px-3 mt-3 mb-2 text-white-50" style="font-size: 11px;">PERSONAL</div>
+            <a href="index.php?page=tarik_saldo_nasabah" class="menu-item">
+                <i class="bi bi-clock-history"></i>
+                <span class="menu-item-text">Ajukan Penarikan Saldo</span>
+            </a>
             <a href="index.php?page=riwayat" class="menu-item">
                 <i class="bi bi-clock-history"></i>
                 <span class="menu-item-text">Riwayat Transaksi</span>
